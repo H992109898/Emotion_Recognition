@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-import cv2, time
-from face_image import calcul_emotion
+import cv2, time, thread
+import calcul_emotion
 
 def inRect(x, y, face):
     LT_x = face[0]
@@ -10,25 +10,27 @@ def inRect(x, y, face):
     RD_y = face[1] + face[3]
     return x > LT_x and x < RD_x and y > LT_y and y < RD_y
 
-def emotion(event, x, y, flags, param):
+#param [faces, emotions, gray, times]
+def call_back(event, x, y, flags, param):
     try:
         face = param[0][0]
     except IndexError:
-        print "face no found"
         return
     if event==cv2.EVENT_LBUTTONDOWN and inRect(x, y, face):
-        body = get_body(param[2])
-      
-        data = calcul_emotion.Calcul().get_result(body)
-        print data
-        if len(data) > 0:
-            param[1][0] = data[0]['scores']
-            param[3][0] = time.time()
-        else:
-            print "face no found"
-            
+        thread.start_new(updata_emotion, (param[1], param[2], param[3]))
+        
+def updata_emotion(emotions, img, times):
+    body = get_body(img)
+    data = calcul_emotion.get_result(body)
+    print data
+    try:
+        emotions[0] = data[0]['scores']
+        times[0] = time.time()
+    except:
+        print "face no found"
+
 def get_body(img):
-    fileName = "suffer\\1.jpg"
+    fileName = "suffer.jpg"
     cv2.imwrite(fileName, img)
     fout = open(fileName, "rb")
     data = fout.read()
