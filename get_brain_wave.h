@@ -1,0 +1,1 @@
+__declspec(dllexport) int get_brain_wave(int data[]);
