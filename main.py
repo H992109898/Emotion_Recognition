@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 
 from face_image import face_image_main
-import threading
 from mind_wave import read_datas
+import threading
 
 if __name__ == "__main__":
     mind_datas = [0,0,0,0,0,0,0,0,0]

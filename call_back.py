@@ -1,9 +1,11 @@
 # -*- coding: UTF-8 -*-
 
-import cv2, time
-import calcul_emotion
+import cv2
+from face_image import calcul_emotion
 import threading
-from mind_wave import mind_wave_main
+import mind_wave
+import os
+from face_image import Animation
 
 def inRect(x, y, face):
     LT_x = face[0]
@@ -12,31 +14,41 @@ def inRect(x, y, face):
     RD_y = face[1] + face[3]
     return x > LT_x and x < RD_x and y > LT_y and y < RD_y
 
-#param [faces, emotions, gray, times, strong_scores, mind_datas]
+#param [faces, img, mind_datas]
 def call_back(event, x, y, flags, param):
     try:
         face = param[0][0]
     except IndexError:
         return
+    img = param[1]
+    mind_datas = param[2]
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    emotions = [{},]
     if event==cv2.EVENT_LBUTTONDOWN and inRect(x, y, face):
-        threading.Thread(target=updata_emotion, args=(param[1], param[2], param[3])).start()
-        param[4][0] = mind_wave_main.get_scores.get_scores(param[5])
+        threading.Thread(target=updata_emotion, args=(emotions, gray)).start()
+        isStrong = mind_wave.get_scores.get_scores(mind_datas)
+        color = {1: (0, 0, 255),
+             0: (0, 255, 0),
+            -1: (255, 0, 0)
+            }[isStrong]
+        play = Animation.Animation(img, face, 'image', emotions, color)
+        play.play()
         
-        
-def updata_emotion(emotions, img, times):
+def updata_emotion(emotions, img):
     
     body = get_body(img)
     data = calcul_emotion.get_result(body)
-    print data
     
     lock = threading.Lock() 
     lock.acquire()
     try:
         emotions[0] = data[0]['scores']
-        times[0] = time.time()
     except:
-        print "face no found"
+        pass
+
     lock.release()
+    
 
 def get_body(img):
     fileName = "suffer.jpg"
@@ -44,4 +56,9 @@ def get_body(img):
     fout = open(fileName, "rb")
     data = fout.read()
     fout.close()
+    
+    try:
+        os.remove('suffer.jpg')
+    except:
+        pass
     return data
