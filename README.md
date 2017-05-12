@@ -1,5 +1,4 @@
-# Emotion_Recognition
-detect emotion by face image and brain wave.  
+# Emotion_Recognition     
 
 Detect emotion by face expression and EEG.  
 
