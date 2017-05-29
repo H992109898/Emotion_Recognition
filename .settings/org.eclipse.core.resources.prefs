@@ -2,6 +2,7 @@ eclipse.preferences.version=1
 encoding//face_image/Animation.py=UTF-8
 encoding//face_image/__init__.py=UTF-8
 encoding//face_image/calcul_emotion.py=UTF-8
+encoding//face_image/calcul_emotion_local.py=utf-8
 encoding//face_image/draw_img.py=UTF-8
 encoding//face_image/face_image_main.py=UTF-8
 encoding//face_image/face_rect.py=UTF-8

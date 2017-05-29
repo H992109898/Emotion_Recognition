@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import cv2
-from face_image import calcul_emotion
+from face_image import calcul_emotion, calcul_emotion_local
 import threading
 import mind_wave
 import os
@@ -26,7 +26,7 @@ def call_back(event, x, y, flags, param):
     
     emotions = [{},]
     if event==cv2.EVENT_LBUTTONDOWN and inRect(x, y, face):
-        threading.Thread(target=updata_emotion, args=(emotions, gray)).start()
+        threading.Thread(target=updata_emotion, args=(emotions, gray, face)).start()
         isStrong = mind_wave.get_scores.get_scores(mind_datas)
         color = {1: (0, 0, 255),
              0: (0, 255, 0),
@@ -35,13 +35,15 @@ def call_back(event, x, y, flags, param):
         play = Animation.Animation(img, face, 'image', emotions, color)
         play.play()
         
-def updata_emotion(emotions, img):
-    
+def updata_emotion(emotions, img, face):
+    '''
     body = get_body(img)
     data = calcul_emotion.get_result(body)
-    
+    '''
+    data = calcul_emotion_local.gabor_predict(img, face)
     lock = threading.Lock() 
     lock.acquire()
+    print data[0]['scores']
     try:
         emotions[0] = data[0]['scores']
     except:

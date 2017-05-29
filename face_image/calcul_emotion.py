@@ -23,8 +23,12 @@ def get_result(body):
             cntTime += 1
             print("[Errno {0}] {1}".format(e.errno, e.strerror))
             pass
+    '''
+    try:
         print datas[0]
+    except:
+        print "no datas"
+    '''
     return json.loads(datas)
     
         
-            
